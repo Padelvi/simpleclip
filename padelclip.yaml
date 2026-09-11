@@ -1,0 +1,5 @@
+name: padelclip
+dependencies:
+  - click
+  - pytest
+  - python
