@@ -6,8 +6,7 @@ import time
 from typing import Tuple
 
 # Local imports
-from helpers import *
-from configs import *
+from app.aux import *
 from history import History
 
 @click.group()

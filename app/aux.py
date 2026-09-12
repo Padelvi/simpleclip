@@ -1,6 +1,16 @@
+import os
 from pathlib import Path
 from uuid import uuid4
 from typing import List, Dict, Any
+
+DATA_DIR = Path(
+    os.environ.get(
+        "XDG_DATA_HOME",
+        Path.home() / ".local" / "share"
+    )
+) / "clip"
+
+MAX_ITEMS = 50
 
 type JSONType = List[Dict[str, Any]]
 
