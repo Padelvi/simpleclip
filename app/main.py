@@ -7,21 +7,15 @@ from typing import Tuple
 
 # Local imports
 from app.aux import *
-from history import History
+from app.history import History
 
 @click.group()
-def cli():
+def cli() -> None:
     """Simple text clipboard manager written in python."""
     pass
 
-# @cli.command(name="list")
-# @click.option(
-#     "--ids-only",
-#     is_flag=True,
-#     help="Only print entry IDs.",
-# )
 @cli.command(name="list")
-def list_entries():
+def list_items() -> None:
     """List the clipboard history."""
 
     with History(DATA_DIR, MAX_ITEMS) as history:
@@ -32,46 +26,61 @@ def list_entries():
                 time.localtime(entry["timestamp"]),
             )
             click.echo(
-                f"{entry['id']}\t{timestamp}\t{entry["text"]}"
+                f"{entry['uuid']}\t{timestamp}\t{entry["content"]}"
             )
 
 @cli.command()
-@click.argument("content", nargs=-1)
-def add(content: Tuple[str]):
-    """Add stdin to the clipboard history."""
-    text: str = " ".join(content)
-    print(text)
+@click.argument("args", nargs=-1)
+def add(args: Tuple[str]) -> None:
+    """Add stdin (or all args as a string, if entered) to the clipboard history."""
 
-    with History(DATA_DIR, MAX_ITEMS) as history:
-        # Put newest item first
-        entry = {
-            "id": gen_uuid(),
-            "timestamp": time.time(),
-            "text": text,
-        }
-        click.echo(entry["id"])
-
-        # trim_history(history, max_items)
-        history.append(entry)
-
-@cli.command()
-@click.argument("uuid")
-def delete(uuid: str):
-    """Delete an entry by its UUID."""
-
-    click.echo(f"Eliminaría la entrada {uuid}")
+    # Get content from selected medium and see if it is empty
+    content: str = " ".join(args) if args else read_stdin()
+    if not content:
+        raise click.ClickException("There is no content to copy.")
 
     with History(DATA_DIR, MAX_ITEMS) as history:
         history_items = history.load()
 
-        index, entry = find_entry(history, uuid)
+        # Put newest item first
+        entry = {
+            "uuid": gen_uuid(),
+            "timestamp": time.time(),
+            "content": content,
+        }
 
-        if entry is None:
-            raise click.ClickException(
-                f"Entry not found: {uuid}"
-            )
+        # The new item goes first
+        history.write([entry, *history_items])
 
-    click.echo(f"Deleted {uuid}")
+@cli.command()
+@click.argument("uuid", nargs=1, default="")
+def delete(uuid: str) -> None:
+    """Delete an entry by its UUID, entered from stdin (or )."""
+    uuid = uuid.strip()
+    if not uuid:
+        uuid = read_stdin()
+        print(uuid)
+        exit(0)
+    if not uuid:
+        raise click.ClickException("No UUID was entered.")
+
+    with History(DATA_DIR, MAX_ITEMS) as history:
+        history_items = history.load()
+        found = False
+
+        for item in history_items:
+            if item['uuid'] == uuid:
+                found = True
+                content = item['content']
+                history_items.remove(item)
+
+        history.write(history_items)
+
+    if found:
+        click.echo(f"Deleted entry {uuid}, containing \"{content}\"")
+    else:
+        raise click.ClickException(f"Entry not found: {uuid}")
+
 
 @cli.command()
 @click.option(
@@ -79,7 +88,7 @@ def delete(uuid: str):
     is_flag=True,
     help="Do not ask for confirmation.",
 )
-def wipe(yes):
+def wipe(yes: bool) -> None:
     """Delete the entire clipboard history."""
 
     with History(DATA_DIR, MAX_ITEMS) as history:
@@ -95,7 +104,7 @@ def wipe(yes):
                 abort=True,
             )
 
-        history.wipe()
+        history.write([])
 
     click.echo("History wiped.")
 

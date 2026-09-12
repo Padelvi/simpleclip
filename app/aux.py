@@ -1,7 +1,8 @@
-import os
+import os, sys
 from pathlib import Path
 from uuid import uuid4
 from typing import List, Dict, Any
+from click import ClickException
 
 DATA_DIR = Path(
     os.environ.get(
@@ -14,6 +15,7 @@ MAX_ITEMS = 50
 
 type JSONType = List[Dict[str, Any]]
 
+# Ensure a dir exists, create it if not
 def ensure_dir(dir: Path):
     dir.mkdir(mode=0o700, parents=True, exist_ok=True)
 
@@ -21,10 +23,7 @@ def ensure_dir(dir: Path):
 def gen_uuid():
     return uuid4().hex[:8]
 
-# Probably unnecessary, maybe move to history object
-def find_entry(history, entry_id):
-    for index, entry in enumerate(history):
-        if entry["id"] == entry_id:
-            return index, entry
-
-    return None, None
+def read_stdin() -> str:
+    if sys.stdin.isatty():
+        raise ClickException("Empty command! Use an argument or a pipe (not a tty) for stdin.")
+    return sys.stdin.read().strip()

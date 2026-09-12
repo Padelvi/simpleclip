@@ -17,6 +17,10 @@ class History:
 
         self.max_items = max_items
 
+    # PENDING
+    def trim(self) -> None:
+        return None
+
     # Get a read-only view of the clipboard
     def load(self) -> JSONType:
         if not self.path.exists():
@@ -26,8 +30,6 @@ class History:
             with self.path.open("r", encoding="utf-8") as f:
                 result: JSONType = json.load(f)
 
-            # PENDING: Remove malformed entries
-
             return result
 
         except (OSError, json.JSONDecodeError, ValueError):
@@ -35,26 +37,24 @@ class History:
                 f"Could not read history file: {self.path}"
         )
 
-    def write(self, entry: Dict[str, Any] | JSONType) -> None:
+    def write(self, entry: JSONType) -> None:
         with open(self.path, "w") as f:
             json.dump(entry, f, indent=2)
 
-    def append(self, entry: Dict[str, Any]) -> None:
-        # The new item goes first
-        self.write([entry, *self.load()])
+    # def find(self, content: str) -> Tuple[str]:
+    #     for index, entry in self.load().values():
+    #         if entry["content"] in contents:
+    #             return index, entry
 
-    def wipe(self) -> None:
-        self.write([])
-
-    # PENDING
-    def trim(self) -> None:
-        return None
+    #     return None
 
 # Process-level lock shared by all operations managed with __enter__ and __exit__
 
     def __enter__(self):
         ensure_dir(self.data_dir)
         self.file = self.lockpath.open("w")
+        # PENDING: Remove malformed entries
+
         fcntl.flock(
             self.file.fileno(),
             fcntl.LOCK_EX,
