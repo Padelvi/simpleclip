@@ -5,7 +5,7 @@ from pathlib import Path
 from click import ClickException
 
 # Local imports
-from app.aux import *
+from clip.aux import *
 
 class History:
     def __init__(self, data_dir: Path, max_items: int) -> None:
