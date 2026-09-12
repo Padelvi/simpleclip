@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "simpleclip"
+authors = [{name = "Pablo del Villar Ochoa", email = "pablodelvillarochoa@gmail.com"}]
+dynamic = ["version"]
+dependencies = ["click"]
+requires-python = ">= 3.13"
+description = "Simple cli clipboard manager, for both X11 and Wayland."
+readme = "README.md"
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE"]
+keywords = ["simple", "clipboard", "X11", "X", "Wayland"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+]
+
+[project.scripts]
+sclip = "sclip.main:cli"
+
+[project.urls]
+Repository = "https://github.com/Padelvi/simpleclip.git"
+Issues = "https://github.com/Padelvi/simpleclip/issues"
