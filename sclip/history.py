@@ -5,16 +5,20 @@ from click import ClickException
 
 # Local imports
 from sclip.aux import *
+from sclip.config import Config
 
 class History:
     def __init__(self) -> None:
-        self.state_dir = STATE_DIR
+        with Config() as config:
+            config_items = config.load()
+
+        self.state_dir: Path = Path.home() / config_items['STATE_DIR']
         ensure_dir(self.state_dir)
 
         self.path = self.state_dir / "history.json"
         self.lockpath = self.state_dir / "lock"
 
-        self.max_items = MAX_ITEMS
+        self.max_items: int = config_items['MAX_ITEMS']
 
     # PENDING
     def trim(self) -> None:
@@ -40,15 +44,7 @@ class History:
         with open(self.path, "w") as f:
             json.dump(entry, f, indent=2)
 
-    # def find(self, content: str) -> Tuple[str]:
-    #     for index, entry in self.load().values():
-    #         if entry["content"] in contents:
-    #             return index, entry
-
-    #     return None
-
 # Process-level lock shared by all operations managed with __enter__ and __exit__
-
     def __enter__(self):
         ensure_dir(self.state_dir)
         self.file = self.lockpath.open("w")

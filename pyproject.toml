@@ -2,6 +2,9 @@
 requires = ["setuptools >= 77.0.3"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools.package-data]
+sclip = ["default_config.json"]
+
 [project]
 name = "simpleclip"
 authors = [{name = "Pablo del Villar Ochoa", email = "pablodelvillarochoa@gmail.com"}]
