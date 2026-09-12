@@ -1,21 +1,20 @@
 # Library imports
 import fcntl
 import json
-from pathlib import Path
 from click import ClickException
 
 # Local imports
 from sclip.aux import *
 
 class History:
-    def __init__(self, data_dir: Path, max_items: int) -> None:
-        ensure_dir(data_dir)
-        self.data_dir = data_dir
+    def __init__(self) -> None:
+        self.state_dir = STATE_DIR
+        ensure_dir(self.state_dir)
 
-        self.path = data_dir / "history.json"
-        self.lockpath = data_dir / "lock"
+        self.path = self.state_dir / "history.json"
+        self.lockpath = self.state_dir / "lock"
 
-        self.max_items = max_items
+        self.max_items = MAX_ITEMS
 
     # PENDING
     def trim(self) -> None:
@@ -51,7 +50,7 @@ class History:
 # Process-level lock shared by all operations managed with __enter__ and __exit__
 
     def __enter__(self):
-        ensure_dir(self.data_dir)
+        ensure_dir(self.state_dir)
         self.file = self.lockpath.open("w")
         # PENDING: Remove malformed entries
 

@@ -18,7 +18,7 @@ def cli() -> None:
 def list_items() -> None:
     """List the clipboard history."""
 
-    with History(DATA_DIR, MAX_ITEMS) as history:
+    with History() as history:
         history_items = history.load()
         for entry in history_items:
             timestamp = time.strftime(
@@ -39,7 +39,7 @@ def add(args: Tuple[str]) -> None:
     if not content:
         raise click.ClickException("There is no content to copy.")
 
-    with History(DATA_DIR, MAX_ITEMS) as history:
+    with History() as history:
         history_items = history.load()
 
         # Put newest item first
@@ -64,7 +64,7 @@ def delete(uuid: str) -> None:
     if not uuid:
         raise click.ClickException("No UUID was entered.")
 
-    with History(DATA_DIR, MAX_ITEMS) as history:
+    with History() as history:
         history_items = history.load()
         found = False
 
@@ -91,7 +91,7 @@ def delete(uuid: str) -> None:
 def wipe(yes: bool) -> None:
     """Delete the entire clipboard history."""
 
-    with History(DATA_DIR, MAX_ITEMS) as history:
+    with History() as history:
         history_items = history.load()
 
         if not history_items:
