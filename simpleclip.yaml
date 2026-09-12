@@ -1,4 +1,4 @@
-name: padelclip
+name: simpleclip
 dependencies:
   - click
   - python
