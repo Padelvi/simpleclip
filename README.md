@@ -1,2 +1,21 @@
-# padelclip
-Simple text-only command interface for clipboard history managing, functional for both X11 and Wayland.
+# Simpleclip
+Padelclip (pclip) is a simple command interface for text-only (for now) clipboard history managing, functional for both X11 and Wayland.
+Simpleclip is built in python, using the cli toolkit [Click](https://github.com/pallets/click). It does not have any additional dependencies.
+It does not access the system clipboard by itself, so it is thought as a complementary tool to combine with xclip in X11, wl-clipboard in Wayland or other similar tools.
+
+## Install
+The package may be installed from this git repository using `pip` or `pipx`. You can use any of these three commands depending on your needs:
+```sh
+pip install git+https://github.com/Padelvi/simpleclip
+pip install --user git+https://github.com/Padelvi/simpleclip
+pipx install git+https://github.com/Padelvi/simpleclip
+```
+If you are interested in installing Simpleclip for development, the easiest approach is to clone the repository. For that purposes, a Conda environment file is provided.
+
+## Usage
+
+### Useful aliases
+As wew have mentioned, simpleclip does not access any system clipboard directly. Instead, it is designed to work with 
+
+## Shell completion
+For shell completion, refer to [this click docs guide](https://click.palletsprojects.com/en/stable/shell-completion/) for your shell of choice, using `sclip` as the program name.

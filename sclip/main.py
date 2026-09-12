@@ -6,8 +6,8 @@ import time
 from typing import Tuple
 
 # Local imports
-from clip.aux import *
-from clip.history import History
+from sclip.aux import *
+from sclip.history import History
 
 @click.group()
 def cli() -> None:
