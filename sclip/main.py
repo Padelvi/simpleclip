@@ -41,8 +41,9 @@ def list_items() -> None:
                 "%Y-%m-%d %H:%M:%S",
                 time.localtime(entry["timestamp"]),
             )
+            content = display(entry["content"])
             click.echo(
-                f"{entry['uuid']}\t{timestamp}\t{entry["content"]}"
+                f"{entry['uuid']}\t{timestamp}\t{content}"
             )
 
 @cli.command()
@@ -69,15 +70,14 @@ def add(args: Tuple[str]) -> None:
         history.write([entry, *history_items])
 
 @cli.command()
-@click.argument("uuid", nargs=1, default="")
-def delete(uuid: str) -> None:
-    """Delete an entry by its UUID, entered from stdin (or )."""
-    uuid = uuid.strip()
-    if not uuid:
-        uuid = read_stdin()
-        print(uuid)
-        exit(0)
-    if not uuid:
+@click.argument("args", nargs=-1)
+def delete(args: Tuple[str]) -> None:
+    """Delete an entry by its UUID, entered from stdin (or arguments)."""
+    if args:
+        uuid = args[0]
+    else:
+        uuid = read_stdin().partition("\t")[0]
+    if not uuid.strip():
         raise click.ClickException("No UUID was entered.")
 
     with History() as history:
@@ -93,7 +93,7 @@ def delete(uuid: str) -> None:
         history.write(history_items)
 
     if found:
-        click.echo(f"Deleted entry {uuid}, containing \"{content}\"")
+        click.echo(f"Deleted entry {uuid}, containing {display(content)}")
     else:
         raise click.ClickException(f"Entry not found: {uuid}")
 

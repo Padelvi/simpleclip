@@ -19,3 +19,6 @@ def read_stdin() -> str:
     if sys.stdin.isatty():
         raise ClickException("Empty command! Use an argument or a pipe (not a tty) for stdin.")
     return sys.stdin.read().strip()
+
+def display(content: str) -> str:
+    return repr(content).replace("\n", "\t")
