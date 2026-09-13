@@ -1,4 +1,0 @@
-name: simpleclip
-dependencies:
-  - click
-  - python
