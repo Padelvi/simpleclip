@@ -5,7 +5,10 @@ from uuid import uuid4
 from typing import List, Dict, Any
 from click import ClickException
 
-type JSONType = List[Dict[str, Any]]
+type Parameter = int|str
+type JSONConfig = Dict[str, Parameter]
+type JSONUnit = Dict[str, Any]
+type JSONMultiple = List[JSONUnit]
 
 # Ensure a dir exists, create it if not
 def ensure_dir(dir: Path):

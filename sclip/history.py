@@ -25,13 +25,13 @@ class History:
         return None
 
     # Get a read-only view of the clipboard
-    def load(self) -> JSONType:
+    def load(self) -> JSONMultiple:
         if not self.path.exists():
             return []
 
         try:
             with self.path.open("r", encoding="utf-8") as f:
-                result: JSONType = json.load(f)
+                result: JSONMultiple = json.load(f)
 
             return result
 
@@ -40,7 +40,7 @@ class History:
                 f"Could not read history file: {self.path}"
         )
 
-    def write(self, entry: JSONType) -> None:
+    def write(self, entry: JSONMultiple) -> None:
         with open(self.path, "w") as f:
             json.dump(entry, f, indent=2)
 
