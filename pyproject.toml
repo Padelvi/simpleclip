@@ -25,7 +25,6 @@ classifiers = [
 
 [project.scripts]
 sclip = "sclip.main:cli"
-sclip-watcher = "sclip_watcher.main:main"
 
 [project.urls]
 Repository = "https://github.com/Padelvi/simpleclip.git"
