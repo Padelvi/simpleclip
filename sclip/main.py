@@ -68,7 +68,7 @@ def copy() -> None:
     with Config() as config:
         try:
             copy_cmd = config.load()["COPY_CMD"]
-        except IndexError:
+        except KeyError:
             config.reset()
             copy_cmd = config.load()["COPY_CMD"]
 

@@ -14,7 +14,7 @@ def watch() -> None:
 
         try:
             paste_cmd_str: str = config_items["PASTE_CMD"]
-        except IndexError:
+        except KeyError:
             config.reset()
             config_items =  config.load()
             paste_cmd_str: str = config_items["PASTE_CMD"]
@@ -22,7 +22,7 @@ def watch() -> None:
 
         try:
             watcher_time: float = config_items["WATCHER_TIME"]/1000
-        except IndexError:
+        except KeyError:
             config.reset()
             config_items =  config.load()
             watcher_time: float = config_items["WATCHER_TIME"]/1000
