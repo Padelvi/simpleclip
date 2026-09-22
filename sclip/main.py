@@ -8,6 +8,7 @@ from typing import Tuple
 # Local imports
 from sclip.aux import *
 from sclip.history import History
+from sclip.config import Config
 
 @click.group()
 def cli() -> None:
@@ -31,7 +32,7 @@ def cli() -> None:
     pass
 
 @cli.command(name="list")
-def list_items() -> None:
+def list_cmd() -> None:
     """List the clipboard history."""
 
     with History() as history:
@@ -60,7 +61,7 @@ def add(args: Tuple[str]) -> None:
         history_items = history.load()
 
         # Put newest item first
-        entry = {
+        entry: JSONUnit = {
             "uuid": gen_uuid(),
             "timestamp": time.time(),
             "content": content,
@@ -73,6 +74,7 @@ def add(args: Tuple[str]) -> None:
 @click.argument("args", nargs=-1)
 def delete(args: Tuple[str]) -> None:
     """Delete an entry by its UUID, entered from stdin (or arguments)."""
+
     if args:
         uuid = args[0]
     else:
@@ -87,7 +89,7 @@ def delete(args: Tuple[str]) -> None:
         for item in history_items:
             if item['uuid'] == uuid:
                 found = True
-                content = item['content']
+                content: str = item['content']
                 history_items.remove(item)
 
         history.write(history_items)
@@ -123,6 +125,35 @@ def wipe(yes: bool) -> None:
         history.write([])
 
     click.echo("History wiped.")
+
+@cli.group("config")
+def config_group() -> None:
+    """Read or set configuration parameters."""
+    pass
+
+@config_group.command(name="list")
+def config_list() -> None:
+    """See all the configuration parameters."""
+    with Config() as config:
+        click.echo(config.load())
+
+@config_group.command(name="read")
+@click.argument("parameter", nargs=1)
+def config_read(parameter: str) -> None:
+    """Read a parameter from the configuration file."""
+    with Config() as config:
+        all_configs = config.load()
+    if parameter not in all_configs:
+        raise click.ClickException(f"Parameter \"{parameter}\" does not exist!")
+
+
+    value: Parameter = all_configs[parameter]
+    click.echo(f"Value for {parameter} is: {value}")
+        # elif set:
+        #     all_configs[parameter] = set
+        #     config.write(all_configs)
+        # else:
+        #     raise click.ClickException("Use --read or --set to use configs!")
 
 # Entry point
 if __name__ == "__main__":
