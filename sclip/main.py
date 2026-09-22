@@ -9,6 +9,7 @@ from typing import Tuple
 from sclip.aux import *
 from sclip.history import History
 from sclip.config import Config
+from sclip.watcher import watch
 
 @click.group()
 def cli() -> None:
@@ -159,6 +160,11 @@ def config_set(parameter_name: str, value: Parameter) -> None:
         config.write(all_configs)
 
         click.echo(f"Wrote parameter {parameter_name} to {value}")
+
+@cli.command("watch")
+def watch_command():
+    """Start the clipboard watcher process."""
+    watch()
 
 # Entry point
 if __name__ == "__main__":
