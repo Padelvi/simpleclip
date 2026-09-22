@@ -62,6 +62,21 @@ def add(args: Tuple[str]) -> None:
         history.append(content)
 
 @cli.command()
+def copy() -> None:
+    """Copy stdin content to clipboard and add it to the history."""
+
+    content = read_stdin()
+
+    with Config() as config:
+        try:
+            copy_cmd = config.load()["COPY_CMD"]
+        except IndexError:
+            config.reset()
+            copy_cmd = config.load()["COPY_CMD"]
+
+    copy_stdin(copy_cmd, content)
+
+@cli.command()
 @click.argument("args", nargs=-1)
 def delete(args: Tuple[str]) -> None:
     """Delete an entry by its UUID, entered from stdin (or arguments)."""
