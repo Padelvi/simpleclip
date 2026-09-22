@@ -1,4 +1,6 @@
 {
     "STATE_DIR": ".local/state/sclip",
-    "MAX_ITEMS": 50
+    "MAX_ITEMS": 50,
+    "COPY_CMD": "xclip -selection clipboard",
+    "PASTE_CMD": "xclip -selection clipboard -o"
 }
