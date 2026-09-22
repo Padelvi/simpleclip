@@ -161,6 +161,26 @@ def config_set(parameter_name: str, value: Parameter) -> None:
 
         click.echo(f"Wrote parameter {parameter_name} to {value}")
 
+@config_group.command(name="reset")
+@click.option(
+    "--yes",
+    is_flag=True,
+    help="Do not ask for confirmation.",
+)
+def config_reset(yes: bool) -> None:
+    """Reset all the default config parameters."""
+
+    with Config() as config:
+        if not yes:
+            click.confirm(
+                "Delete all clipboard entries?",
+                abort=True,
+            )
+
+        config.reset()
+
+    click.echo("Config reset.")
+
 @cli.command("watch")
 def watch_command():
     """Start the clipboard watcher process."""
