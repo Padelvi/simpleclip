@@ -3,7 +3,6 @@
 # Library imports
 import click
 import time
-from typing import Tuple
 
 # Local imports
 from sclip.aux import *
@@ -62,7 +61,7 @@ def add() -> None:
 
 @cli.command()
 def copy() -> None:
-    """Copy stdin content to clipboard and add it to the history."""
+    """Copy stdin content to clipboard (it is not added to the history)."""
 
     content = read_stdin()
 
