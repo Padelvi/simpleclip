@@ -37,6 +37,10 @@ class Config:
         with open(self.config_file, "w") as f:
             json.dump(entry, f, indent=1)
 
+    def reset(self):
+        ensure_dir(self.config_dir)
+        shutil.copy(self.default_config, self.config_file)
+
 # Process-level lock shared by all operations managed with __enter__ and __exit__
     def __enter__(self):
         ensure_dir(self.config_dir)
