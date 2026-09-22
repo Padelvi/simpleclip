@@ -2,7 +2,6 @@
 import shutil, json
 import fcntl
 from pathlib import Path
-from typing import Dict, Any
 
 # Local imports
 from sclip.aux import *
@@ -16,7 +15,7 @@ class Config:
 
         ensure_dir(self.config_dir)
 
-    def load(self) -> Dict[str,Any]:
+    def load(self) -> JSONUnit:
         ensure_dir(self.config_dir)
         if not self.config_file.exists():
             shutil.copy(self.default_config, self.config_file)
@@ -34,7 +33,7 @@ class Config:
                 f"Could not read config file: {self.path}"
         )
 
-    def write(self, entry: JSONType) -> None:
+    def write(self, entry: JSONUnit) -> None:
         with open(self.config_file, "w") as f:
             json.dump(entry, f, indent=1)
 
