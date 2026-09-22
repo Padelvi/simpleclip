@@ -1,24 +1,11 @@
 # Library imports
-import subprocess
 import time
-from typing import List
-from click import ClickException, echo
+from click import echo
 
 # Local imports
+from sclip.aux import *
 from sclip.history import History
 from sclip.config import Config
-
-def get_clipboard(paste_cmd: List[str]) -> str:
-    result = subprocess.run(
-        paste_cmd,
-        capture_output=True,
-        text=True,
-    )
-
-    if result.returncode != 0:
-        return ""
-
-    return result.stdout.strip()
 
 def watch() -> None:
     # Get necessary configs for the watcher

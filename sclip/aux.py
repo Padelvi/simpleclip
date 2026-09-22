@@ -1,9 +1,10 @@
 # Library imports
 import sys
+from subprocess import run
 from pathlib import Path
 from uuid import uuid4
 from typing import List, Dict, Any
-from click import ClickException
+from click import ClickException, echo
 
 type Parameter = int|str
 type JSONConfig = Dict[str, Parameter]
@@ -25,3 +26,24 @@ def read_stdin() -> str:
 
 def display(content: str) -> str:
     return repr(content).replace("\n", "\t")
+
+# Copy something to the real clipboard, using the command specified in configs
+def copy_stdin(copy_cmd: List[str], content: str):
+    result = run(
+        [*copy_cmd, content],
+        capture_output=True,
+        text=True,
+    )
+    echo(result.stdout)
+    if result.returncode != 0:
+        raise ClickException(result.stderr)
+
+def get_clipboard(paste_cmd: List[str]) -> str:
+    result = run(
+        paste_cmd,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        return ""
+    return result.stdout.strip()
