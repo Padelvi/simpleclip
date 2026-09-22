@@ -58,17 +58,7 @@ def add(args: Tuple[str]) -> None:
         raise click.ClickException("There is no content to copy.")
 
     with History() as history:
-        history_items = history.load()
-
-        # Put newest item first
-        entry: JSONUnit = {
-            "uuid": gen_uuid(),
-            "timestamp": time.time(),
-            "content": content,
-        }
-
-        # The new item goes first
-        history.write([entry, *history_items])
+        history.append(content)
 
 @cli.command()
 @click.argument("args", nargs=-1)
@@ -127,11 +117,13 @@ def wipe(yes: bool) -> None:
 @cli.group("config")
 def config_group() -> None:
     """Read or set configuration parameters."""
+
     pass
 
 @config_group.command(name="list")
 def config_list() -> None:
     """See all the configuration parameters."""
+
     with Config() as config:
         click.echo(config.load())
 
@@ -139,6 +131,7 @@ def config_list() -> None:
 @click.argument("parameter_name", nargs=1)
 def config_read(parameter_name: str) -> None:
     """Read a parameter_name from the configuration file."""
+
     parameter_name = parameter_name.upper()
 
     with Config() as config:
@@ -154,6 +147,7 @@ def config_read(parameter_name: str) -> None:
 @click.argument("value", nargs=1)
 def config_set(parameter_name: str, value: Parameter) -> None:
     """Read a parameter_name from the configuration file."""
+
     parameter_name = parameter_name.upper()
 
     with Config() as config:
