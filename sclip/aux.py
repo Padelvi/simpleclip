@@ -16,7 +16,7 @@ def ensure_dir(dir: Path):
     dir.mkdir(mode=0o700, parents=True, exist_ok=True)
 
 # Short random ID
-def gen_uuid():
+def gen_uuid() -> str:
     return uuid4().hex[:8]
 
 def read_stdin() -> str:
@@ -28,7 +28,7 @@ def display(content: str) -> str:
     return repr(content).replace("\n", "\t")
 
 # Copy something to the real clipboard, using the command specified in configs
-def copy_stdin(copy_cmd: List[str], content: str):
+def copy_stdin(copy_cmd: List[str], content: str) -> None:
     result = run(
         [*copy_cmd, content],
         capture_output=True,
