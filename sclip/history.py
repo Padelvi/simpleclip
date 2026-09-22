@@ -1,6 +1,7 @@
 # Library imports
 import fcntl
 import json
+import time
 from click import ClickException
 
 # Local imports
@@ -20,10 +21,6 @@ class History:
 
         self.max_items: int = config_items['MAX_ITEMS']
 
-    # PENDING
-    def trim(self) -> None:
-        return None
-
     # Get a read-only view of the clipboard
     def load(self) -> JSONMultiple:
         if not self.path.exists():
@@ -40,15 +37,37 @@ class History:
                 f"Could not read history file: {self.path}"
         )
 
+    # Overwrite old history with a new one (destructive)
     def write(self, entry: JSONMultiple) -> None:
         with open(self.path, "w") as f:
             json.dump(entry, f, indent=2)
+
+    # Append one new item to history
+    def append(self, content: str) -> None:
+        history_items = self.load()
+
+        # Put newest item first
+        entry: JSONUnit = {
+            "uuid": gen_uuid(),
+            "timestamp": time.time(),
+            "content": content,
+        }
+
+        # The new item goes first
+        self.write([entry, *history_items])
+
+    # PENDING
+    def clean(self) -> None:
+        history_items = self.load()
+
+        # First, remove malformed entries
+
 
 # Process-level lock shared by all operations managed with __enter__ and __exit__
     def __enter__(self):
         ensure_dir(self.state_dir)
         self.file = self.lockpath.open("w")
-        # PENDING: Remove malformed entries
+        # self.clean()
 
         fcntl.flock(
             self.file.fileno(),
