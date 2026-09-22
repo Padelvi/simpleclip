@@ -98,7 +98,6 @@ def delete(args: Tuple[str]) -> None:
     if not found:
         raise click.ClickException(f"Entry not found: {uuid}")
 
-
 @cli.command()
 @click.option(
     "--yes",
@@ -137,22 +136,35 @@ def config_list() -> None:
         click.echo(config.load())
 
 @config_group.command(name="read")
-@click.argument("parameter", nargs=1)
-def config_read(parameter: str) -> None:
-    """Read a parameter from the configuration file."""
+@click.argument("parameter_name", nargs=1)
+def config_read(parameter_name: str) -> None:
+    """Read a parameter_name from the configuration file."""
+    parameter_name = parameter_name.upper()
+
     with Config() as config:
         all_configs = config.load()
-    if parameter not in all_configs:
-        raise click.ClickException(f"Parameter \"{parameter}\" does not exist!")
+    if parameter_name not in all_configs:
+        raise click.ClickException(f"parameter_name \"{parameter_name}\" does not exist!")
 
+    value: Parameter = all_configs[parameter_name]
+    click.echo(f"Value for {parameter_name} is: {value}")
 
-    value: Parameter = all_configs[parameter]
-    click.echo(f"Value for {parameter} is: {value}")
-        # elif set:
-        #     all_configs[parameter] = set
-        #     config.write(all_configs)
-        # else:
-        #     raise click.ClickException("Use --read or --set to use configs!")
+@config_group.command(name="set")
+@click.argument("parameter_name", nargs=1)
+@click.argument("value", nargs=1)
+def config_set(parameter_name: str, value: Parameter) -> None:
+    """Read a parameter_name from the configuration file."""
+    parameter_name = parameter_name.upper()
+
+    with Config() as config:
+        all_configs = config.load()
+        if parameter_name not in all_configs:
+            raise click.ClickException(f"parameter_name \"{parameter_name}\" does not exist!")
+
+        all_configs[parameter_name] = value
+        config.write(all_configs)
+
+        click.echo(f"Wrote parameter {parameter_name} to {value}")
 
 # Entry point
 if __name__ == "__main__":
