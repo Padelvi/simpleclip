@@ -91,12 +91,11 @@ def delete(args: Tuple[str]) -> None:
                 found = True
                 content: str = item['content']
                 history_items.remove(item)
+                click.echo(f"Deleted entry {uuid}, containing {display(content)}")
 
         history.write(history_items)
 
-    if found:
-        click.echo(f"Deleted entry {uuid}, containing {display(content)}")
-    else:
+    if not found:
         raise click.ClickException(f"Entry not found: {uuid}")
 
 
