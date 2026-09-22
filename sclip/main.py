@@ -49,14 +49,13 @@ def list_cmd() -> None:
             )
 
 @cli.command()
-@click.argument("args", nargs=-1)
-def add(args: Tuple[str]) -> None:
-    """Add stdin (or all args as a string, if entered) to the clipboard history."""
+def add() -> None:
+    """Add stdin to the clipboard history."""
 
     # Get content from selected medium and see if it is empty
-    content: str = " ".join(args) if args else read_stdin()
+    content: str = read_stdin()
     if not content:
-        raise click.ClickException("There is no content to copy.")
+        raise click.ClickException("There is no content to copy. Remember to use stdin.")
 
     with History() as history:
         history.append(content)
@@ -77,16 +76,12 @@ def copy() -> None:
     copy_stdin(copy_cmd, content)
 
 @cli.command()
-@click.argument("args", nargs=-1)
-def delete(args: Tuple[str]) -> None:
+def delete() -> None:
     """Delete an entry by its UUID, entered from stdin (or arguments)."""
 
-    if args:
-        uuid = args[0]
-    else:
-        uuid = read_stdin().partition("\t")[0]
+    uuid = read_stdin().partition("\t")[0]
     if not uuid.strip():
-        raise click.ClickException("No UUID was entered.")
+        raise click.ClickException("No UUID was entered. Remember to use stdin.")
 
     with History() as history:
         history_items = history.load()
@@ -132,8 +127,7 @@ def wipe(yes: bool) -> None:
 
 @cli.group("config")
 def config_group() -> None:
-    """Read or set configuration parameters."""
-
+    """Read, set or reset configuration parameters."""
     pass
 
 @config_group.command(name="list")
@@ -146,7 +140,7 @@ def config_list() -> None:
 @config_group.command(name="read")
 @click.argument("parameter_name", nargs=1)
 def config_read(parameter_name: str) -> None:
-    """Read a parameter_name from the configuration file."""
+    """Read a parameter from the configuration file."""
 
     parameter_name = parameter_name.upper()
 
@@ -162,7 +156,7 @@ def config_read(parameter_name: str) -> None:
 @click.argument("parameter_name", nargs=1)
 @click.argument("value", nargs=1)
 def config_set(parameter_name: str, value: Parameter) -> None:
-    """Read a parameter_name from the configuration file."""
+    """Read a parameter from the configuration file."""
 
     parameter_name = parameter_name.upper()
 
@@ -188,7 +182,7 @@ def config_reset(yes: bool) -> None:
     with Config() as config:
         if not yes:
             click.confirm(
-                "Delete all clipboard entries?",
+                "Reset all the default config parameters?",
                 abort=True,
             )
 
