@@ -59,20 +59,20 @@ def add() -> None:
     with History() as history:
         history.append(content)
 
-@cli.command()
-def copy() -> None:
-    """Copy stdin content to clipboard (it is not added to the history)."""
+# @cli.command()
+# def copy() -> None:
+#     """Copy stdin content to clipboard (it is not added to the history)."""
 
-    content = read_stdin()
+#     content = read_stdin()
 
-    with Config() as config:
-        try:
-            copy_cmd = config.load()["COPY_CMD"]
-        except KeyError:
-            config.reset()
-            copy_cmd = config.load()["COPY_CMD"]
+#     with Config() as config:
+#         try:
+#             copy_cmd = config.load()["COPY_CMD"]
+#         except KeyError:
+#             config.reset()
+#             copy_cmd = config.load()["COPY_CMD"]
 
-    copy_stdin(copy_cmd, content)
+#     copy_stdin(copy_cmd, content)
 
 @cli.command()
 def delete() -> None:
@@ -123,6 +123,11 @@ def wipe(yes: bool) -> None:
         history.write([])
 
     click.echo("History wiped.")
+
+@cli.command()
+def format() -> None:
+    """Format an fzf output, from stdin, to copy it afterwards"""
+    click.echo(read_stdin().split("\t")[-1])
 
 @cli.group("config")
 def config_group() -> None:
