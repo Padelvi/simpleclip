@@ -25,7 +25,7 @@ def read_stdin() -> str:
     return sys.stdin.read().strip()
 
 def display(content: str) -> str:
-    return repr(content).replace("\n", "\t")
+    return repr(content).replace("\n", "\t")[1:-1]
 
 # Copy something to the real clipboard, using the command specified in configs
 def copy_stdin(copy_cmd: List[str], content: str) -> None:
