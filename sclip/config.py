@@ -22,11 +22,13 @@ class Config:
         self.config_file = self.config_dir / "config.json"
         self.lockpath = self.config_dir / "lock"
 
-    def check(self, auto_write: bool) -> bool:
+    def check(self) -> bool:
         items = self.load()
 
+        result = True
+
         if items.keys() != config_types.keys():
-            return False
+            result = False
 
         for var in config_types.keys():
             if type(items[var]) != config_types[var]:
@@ -38,9 +40,7 @@ class Config:
                 except ValueError:
                     result = False
 
-        result = True
-
-        if auto_write and result:
+        if not result:
             self.write(items)
 
         return result
@@ -74,7 +74,8 @@ class Config:
     def __enter__(self):
         ensure_dir(self.config_dir)
         self.file = self.lockpath.open("w")
-        self.check(True)
+        if not self.check():
+            self.reset()
 
         fcntl.flock(
             self.file.fileno(),
