@@ -59,20 +59,20 @@ def add() -> None:
     with History() as history:
         history.append(content)
 
-# @cli.command()
-# def copy() -> None:
-#     """Copy stdin content to clipboard (it is not added to the history)."""
+@cli.command()
+def copy() -> None:
+    """Copy stdin content to clipboard (it is not added to the history)."""
 
-#     content = read_stdin()
+    content = read_stdin()
 
-#     with Config() as config:
-#         try:
-#             copy_cmd = config.load()["COPY_CMD"]
-#         except KeyError:
-#             config.reset()
-#             copy_cmd = config.load()["COPY_CMD"]
+    with Config() as config:
+        try:
+            copy_cmd = config.load()["COPY_CMD"].split(" ")
+        except KeyError:
+            config.reset()
+            copy_cmd = config.load()["COPY_CMD"].split(" ")
 
-#     copy_stdin(copy_cmd, content)
+    copy_stdin(copy_cmd, content)
 
 @cli.command()
 def delete() -> None:
@@ -111,8 +111,7 @@ def wipe(yes: bool) -> None:
         history_items = history.load()
 
         if not history_items:
-            click.echo("History is already empty.")
-            return None
+            raise click.ClickException("History is already empty.")
 
         if not yes:
             click.confirm(
@@ -195,7 +194,7 @@ def config_reset(yes: bool) -> None:
     click.echo("Config reset.")
 
 @cli.command("watch")
-def watch_command():
+def watch_cmd():
     """Start the clipboard watcher process."""
     watch()
 
