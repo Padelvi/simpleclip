@@ -2,9 +2,18 @@
 import shutil, json
 import fcntl
 from pathlib import Path
+from typing import Dict
 
 # Local imports
 from sclip.aux import *
+
+config_types: Dict[str,type] = {
+    "STATE_DIR": str,
+    "MAX_ITEMS": int,
+    "COPY_CMD": str,
+    "PASTE_CMD": str,
+    "WATCHER_TIME": int
+}
 
 class Config:
     def __init__(self) -> None:
@@ -13,7 +22,28 @@ class Config:
         self.config_file = self.config_dir / "config.json"
         self.lockpath = self.config_dir / "lock"
 
-        ensure_dir(self.config_dir)
+    def check(self, auto_write: bool) -> bool:
+        items = self.load()
+
+        if items.keys() != config_types.keys():
+            return False
+
+        for var in config_types.keys():
+            if type(items[var]) != config_types[var]:
+                try:
+                    if config_types[var] is int:
+                        items[var] = int(items[var])
+                    else:
+                        items[var] = str(items[var])
+                except ValueError:
+                    result = False
+
+        result = True
+
+        if auto_write and result:
+            self.write(items)
+
+        return result
 
     def load(self) -> JSONUnit:
         ensure_dir(self.config_dir)
@@ -24,14 +54,13 @@ class Config:
 
         try:
             with self.path.open("r", encoding="utf-8") as f:
-                result: JSONType = json.load(f)
-
-            return result
-
+                result: JSONUnit = json.load(f)
         except (OSError, json.JSONDecodeError, ValueError):
             raise ClickException(
                 f"Could not read config file: {self.path}"
         )
+        else:
+            return result
 
     def write(self, entry: JSONUnit) -> None:
         with open(self.config_file, "w") as f:
@@ -45,6 +74,7 @@ class Config:
     def __enter__(self):
         ensure_dir(self.config_dir)
         self.file = self.lockpath.open("w")
+        self.check(True)
 
         fcntl.flock(
             self.file.fileno(),
