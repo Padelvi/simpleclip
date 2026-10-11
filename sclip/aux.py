@@ -1,13 +1,12 @@
 # Library imports
 import sys
-from subprocess import run
+from subprocess import run, Popen, PIPE
 from pathlib import Path
 from uuid import uuid4
 from typing import List, Dict, Any
-from click import ClickException, echo
+from click import ClickException
 
 type Parameter = int|str
-type JSONConfig = Dict[str, Parameter]
 type JSONUnit = Dict[str, Any]
 type JSONMultiple = List[JSONUnit]
 
@@ -27,16 +26,29 @@ def read_stdin() -> str:
 def display(content: str) -> str:
     return repr(content).replace("\n", "\t")[1:-1]
 
+# # Copy something to the real clipboard, using the command specified in configs
+# def copy_stdin(copy_cmd: List[str], content: str) -> None:
+#     result = run(
+#         copy_cmd,
+#         input=content,
+#         capture_output=True,
+#         text=True,
+#     )
+#     if result.returncode != 0:
+#         raise ClickException(result.stderr)
+#     return None
+
+
 # Copy something to the real clipboard, using the command specified in configs
 def copy_stdin(copy_cmd: List[str], content: str) -> None:
-    result = run(
-        [*copy_cmd, content],
-        capture_output=True,
+    process = Popen(
+        copy_cmd,
+        stdin=PIPE,
         text=True,
     )
-    echo(result.stdout)
-    if result.returncode != 0:
-        raise ClickException(result.stderr)
+    assert process.stdin is not None
+    process.stdin.write(content)
+    process.stdin.close()
 
 def get_clipboard(paste_cmd: List[str]) -> str:
     result = run(
@@ -45,5 +57,5 @@ def get_clipboard(paste_cmd: List[str]) -> str:
         text=True,
     )
     if result.returncode != 0:
-        return ""
+        raise ClickException(result.stderr)
     return result.stdout.strip()
