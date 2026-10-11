@@ -21,6 +21,13 @@ class History:
 
         self.max_items: int = config_items['MAX_ITEMS']
 
+    # Remove extra items, if necessary
+    def trim(self, entry: JSONMultiple) -> JSONMultiple:
+        if len(entry) > self.max_items:
+            return entry[:self.max_items]
+        else:
+            return entry
+
     # Get a read-only view of the clipboard
     def load(self) -> JSONMultiple:
         if not self.path.exists():
@@ -29,18 +36,15 @@ class History:
         try:
             with self.path.open("r", encoding="utf-8") as f:
                 result: JSONMultiple = json.load(f)
-
             return result
 
         except (OSError, json.JSONDecodeError, ValueError):
-            raise ClickException(
-                f"Could not read history file: {self.path}"
-        )
+            raise ClickException(f"Could not read history file: {self.path}")
 
     # Overwrite old history with a new one (destructive)
     def write(self, entry: JSONMultiple) -> None:
         with open(self.path, "w") as f:
-            json.dump(entry, f, indent=2)
+            json.dump(self.trim(entry), f, indent=2)
 
     # Append one new item to history
     def append(self, content: str) -> None:
@@ -56,18 +60,29 @@ class History:
         # The new item goes first
         self.write([entry, *history_items])
 
-    # PENDING
+    # Remove malformed entries and check max item limit
     def clean(self) -> None:
         history_items = self.load()
 
-        # First, remove malformed entries
+        for item in history_items:
+            if len(item) != 3:
+                history_items.remove(item)
+                continue
+            try:
+                keep = bool(item["uuid"]) and bool(item["timestamp"]) and bool(item["content"])
+            except KeyError:
+                history_items.remove(item)
+            else:
+                if not keep:
+                    history_items.remove(item)
 
+        self.write(self.trim(history_items))
 
 # Process-level lock shared by all operations managed with __enter__ and __exit__
     def __enter__(self):
         ensure_dir(self.state_dir)
         self.file = self.lockpath.open("w")
-        # self.clean()
+        self.clean()
 
         fcntl.flock(
             self.file.fileno(),
