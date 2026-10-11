@@ -26,19 +26,6 @@ def read_stdin() -> str:
 def display(content: str) -> str:
     return repr(content).replace("\n", "\t")[1:-1]
 
-# # Copy something to the real clipboard, using the command specified in configs
-# def copy_stdin(copy_cmd: List[str], content: str) -> None:
-#     result = run(
-#         copy_cmd,
-#         input=content,
-#         capture_output=True,
-#         text=True,
-#     )
-#     if result.returncode != 0:
-#         raise ClickException(result.stderr)
-#     return None
-
-
 # Copy something to the real clipboard, using the command specified in configs
 def copy_stdin(copy_cmd: List[str], content: str) -> None:
     process = Popen(
