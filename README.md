@@ -21,7 +21,7 @@ In addition to the program, `fzf` (installable [here](https://github.com/junegun
 ## Usage
 
 ### Watcher
-Section pending.
+To use simpleclip comfortably, a watcher command is provided. It is programmed to check if the clipboard content changed using the defined paste command. Every time the content changes, the new content is added to sclip's history. To make the use of the watcher easier, an example systemd user service is provided in the root folder of the repository.
 
 ### Useful aliases
 As we have mentioned, simpleclip modifies the system clipboard by using any command (xclip by default) that can copy and paste from it, communicating through stdin and stdout. It is designed to work with `fzf` to display and select clipboard entries in the terminal. The commands for copying and pasting should be written in the config file.
