@@ -9,13 +9,13 @@ sclip = ["default_config.json"]
 name = "simpleclip"
 authors = [{name = "Pablo del Villar Ochoa", email = "pablodelvillarochoa@gmail.com"}]
 dynamic = ["version"]
-dependencies = ["click","python-xlib"]
+dependencies = ["click"]
 requires-python = ">= 3.13"
 description = "Simple cli clipboard manager, for both X11 and Wayland."
 readme = "README.md"
 license = "GPL-3.0-or-later"
 license-files = ["LICENSE"]
-keywords = ["simple", "clipboard", "X11", "X", "Wayland"]
+keywords = ["simple", "clipboard", "history", "X11", "X", "Wayland"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
